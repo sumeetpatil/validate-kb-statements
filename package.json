@@ -1,0 +1,23 @@
+{
+  "name": "validate-kb-statements",
+  "version": "1.0.0",
+  "description": "Validate Kaybee Statements",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sumeetpatil/validate-kb-statements.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sumeetpatil/validate-kb-statements/issues"
+  },
+  "homepage": "https://github.com/sumeetpatil/validate-kb-statements#readme",
+  "dependencies": {
+    "js-yaml": "^3.14.0",
+    "sync-request": "^6.1.0"
+  }
+}
