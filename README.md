@@ -1,10 +1,11 @@
 # Validate Project-Kb statements
 Command line tool used to generate report for invalid kaybee statements - [kb-statements](https://github.com/SAP/project-kb/tree/vulnerability-data/statements)
 
-## What does the CLI tool report?
+## What does the CLI tool report in project-kb statements
 1. Invalid git commits in statements
 2. Invalid git branch in statements
 3. Invalid git repository in statements
+4. Invalid artifact PURLs
 
 ## Steps to generate a report
 ### Installation
