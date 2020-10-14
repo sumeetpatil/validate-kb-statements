@@ -5,7 +5,7 @@ Command line tool used to generate report for invalid kaybee statements - [kb-st
 1. Invalid git commits in statements
 2. Invalid git branch in statements
 3. Invalid git repository in statements
-4. Invalid artifact PURLs
+4. Invalid PURL format
 
 ## Steps to generate a report
 ### Installation
