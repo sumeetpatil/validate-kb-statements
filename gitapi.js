@@ -17,15 +17,21 @@ exports.isBranch = function (userName, password, repo, branch) {
   const res = request('GET', url, {
     headers: getHttpHeader(userName, password),
   });
-  try{
-      if (JSON.parse(res.getBody().toString('utf8')).commit) {
-        return true;
-      }
-  }catch(err){
-    console.error("http error calling "+url+" with status code "+err.statusCode+" for repo "+repo+" and branch "+branch);
-    return false;
+
+  let status = {};
+  try {
+    if (JSON.parse(res.getBody().toString('utf8')).name) {
+      status.type = "success";
+      return status;
+    }
+  } catch (err) {
+    status.type = "error";
+    status.httpcode = err.statusCode;
+    status.body = err.body;
+    return status;
   }
-  return false;
+  status.type = "error";
+  return status;
 }
 
 exports.isCommit = function (userName, password, repo, commit) {
@@ -34,15 +40,20 @@ exports.isCommit = function (userName, password, repo, commit) {
     headers: getHttpHeader(userName, password),
   });
 
-  try{
+  let status = {};
+  try {
     if (JSON.parse(res.getBody().toString('utf8')).commit) {
-      return true;
+      status.type = "success";
+      return status;
     }
-  }catch(err){
-    console.error("http error calling "+url+" with status code "+err.statusCode+" for repo "+repo+" and commit "+commit);
-    return false;
+  } catch (err) {
+    status.type = "error";
+    status.httpcode = err.statusCode;
+    status.body = err.body;
+    return status;
   }
-  return false;
+  status.type = "error";
+  return status;
 }
 
 exports.isRepository = function (userName, password, repo) {
@@ -51,13 +62,18 @@ exports.isRepository = function (userName, password, repo) {
     headers: getHttpHeader(userName, password),
   });
 
-  try{
+  let status = {};
+  try {
     if (JSON.parse(res.getBody().toString('utf8')).name) {
-      return true;
+      status.type = "success";
+      return status;
     }
-  }catch(err){
-    console.error("http error calling "+url+" with status code "+err.statusCode+" for repo "+repo);
-    return false;
+  } catch (err) {
+    status.type = "error";
+    status.httpcode = err.statusCode;
+    status.body = err.body;
+    return status;
   }
-  return false;
+  status.type = "error";
+  return status;
 }
