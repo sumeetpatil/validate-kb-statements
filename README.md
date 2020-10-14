@@ -23,5 +23,5 @@ node index.js STATEMENTS_FOLDER_PATH YOUR_GIT_USER_NAME YOUR_GIT_PASSWORD
 ```
 
 ### Output
-![Output](./output.jpeg)
+![Output](./output.jpg)
 
