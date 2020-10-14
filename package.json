@@ -19,6 +19,7 @@
   "dependencies": {
     "exceljs": "^4.1.1",
     "js-yaml": "^3.14.0",
+    "packageurl-js": "0.0.2",
     "sync-request": "^6.1.0"
   }
 }

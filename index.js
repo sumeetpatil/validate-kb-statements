@@ -3,6 +3,8 @@ const yaml = require('js-yaml');
 const path = require('path');
 const Excel = require('exceljs');
 const git = require('./gitapi');
+const purl = require('packageurl-js');
+
 const dir = process.argv[2];
 const userName = process.argv[3];
 const password = process.argv[4];
@@ -12,9 +14,10 @@ const worksheet = workbook.addWorksheet("Validate Statements", {});
 worksheet.columns = [
   { header: 'Vulnerability ID', key: 'vulnerabilityId' },
   { header: 'Error Repository', key: 'repositoryError' },
-  { header: 'Error Commit.', key: 'commitsError' },
-  { header: 'Error Branch.', key: 'branchError' },
-  { header: 'Error Log.', key: 'errorLog' }
+  { header: 'Error Commit', key: 'commitsError' },
+  { header: 'Error Branch', key: 'branchError' },
+  { header: 'Error PURL', key: 'purlError' },
+  { header: 'Error Log', key: 'errorLog' }
 ];
 
 const getDirectories = source =>
@@ -36,9 +39,12 @@ for (const i in dirs) {
   analysis.commitsError = "";
   analysis.branchError = "";
   analysis.errorLog = "";
+  analysis.purlError = "";
   let errorLog = {};
   let analysisRepositoryError = {};
   let analysisBranchError = {};
+
+
   if (fixes) {
     for (const fixIndex in fixes) {
       const branch = fixes[fixIndex].id;
@@ -84,6 +90,15 @@ for (const i in dirs) {
           }
         }
       }
+    }
+  }
+
+  const artifacts = statement.artifacts;
+  for(var artifactIndex in artifacts){
+    try{
+      purl.PackageURL.fromString(artifacts[artifactIndex].id);
+    }catch(err){
+      analysis.purlError = analysis.purlError+artifacts[artifactIndex].id;
     }
   }
 
