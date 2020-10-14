@@ -1,10 +1,12 @@
 # Validate Project-Kb statements
-Command line tool used to validate [kb-statements](https://github.com/SAP/project-kb/tree/vulnerability-data/statements)
+Command line tool used to generate report for invalid kaybee statements - [kb-statements](https://github.com/SAP/project-kb/tree/vulnerability-data/statements)
 
-## What does this cli validate?
-Validates commits and branches in a kaybee statement
+## What does the CLI tool report?
+1. Invalid git commits in statements
+2. Invalid git branch in statements
+3. Invalid git repository in statements
 
-## Steps to validate
+## Steps to generate a report
 ### Installation
 1. Install node js
 2. Run `npm install`
