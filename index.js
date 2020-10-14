@@ -98,6 +98,7 @@ for (const i in dirs) {
     try{
       purl.PackageURL.fromString(artifacts[artifactIndex].id);
     }catch(err){
+      isError = true;
       analysis.purlError = analysis.purlError+artifacts[artifactIndex].id;
     }
   }
