@@ -21,7 +21,3 @@ This example will limit the Git Repos to 5000
 ```sh
 node index.js STATEMENTS_FOLDER_PATH YOUR_GIT_USER_NAME YOUR_GIT_PASSWORD
 ```
-
-### Output
-![Output](./output.jpg)
-
