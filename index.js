@@ -83,10 +83,13 @@ for (const i in dirs) {
               analysisBranchError[branch] = 1;
             }
           } else {
-            repositoryError[commitRepo] = 1;
+            if(!repositoryError[commitRepo]){
+              repositoryError[commitRepo] = repoStatus.httpcode;
+            }
+
+            errorLog["git api failed to get " + commitRepo + " with http status code " + repositoryError[commitRepo]] = 1;
             analysisRepositoryError[commitRepo] = 1;
             isError = true;
-            errorLog["git api failed to get " + commitRepo + " with http status code " + repoStatus.httpcode] = 1;
           }
         }
       }
