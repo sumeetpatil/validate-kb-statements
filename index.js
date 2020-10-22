@@ -6,8 +6,7 @@ const git = require('./gitapi');
 const purl = require('packageurl-js');
 
 const dir = process.argv[2];
-const userName = process.argv[3];
-const password = process.argv[4];
+const gitAuthToken = process.argv[3];
 
 const workbook = new Excel.Workbook();
 const worksheet = workbook.addWorksheet("Validate Statements", {});
@@ -15,6 +14,7 @@ worksheet.columns = [
   { header: 'Vulnerability ID', key: 'vulnerabilityId' },
   { header: 'Error Repository', key: 'repositoryError' },
   { header: 'Error Commit', key: 'commitsError' },
+  { header: 'Error Commit Without a branch', key: 'commitsNoBranchError' },
   { header: 'Error Branch', key: 'branchError' },
   { header: 'Error PURL', key: 'purlError' },
   { header: 'Error Log', key: 'errorLog' }
@@ -40,10 +40,10 @@ for (const i in dirs) {
   analysis.branchError = "";
   analysis.errorLog = "";
   analysis.purlError = "";
+  analysis.commitsNoBranchError = "";
   let errorLog = {};
   let analysisRepositoryError = {};
   let analysisBranchError = {};
-
 
   if (fixes) {
     for (const fixIndex in fixes) {
@@ -63,27 +63,32 @@ for (const i in dirs) {
             }
           }
 
-          const repoStatus = git.isRepository(userName, password, repo);
+          const repoStatus = git.isRepository(gitAuthToken, repo);
           if (!repositoryError[commitRepo] && repoStatus.type == "success") {
-            const commitStatus = git.isCommit(userName, password, repo, commitId);
+            if (branch != "DEFAULT_BRANCH") {
+              const branchStatus = !analysisBranchError[branch] && git.isBranch(gitAuthToken, repo, branch);
+              if (branchStatus && branchStatus.type == "error") {
+                errorLog["git api failed to get branch " + branch + " with http status code " + branchStatus.httpcode] = 1;
+                isError = true;
+                analysisBranchError[branch] = 1;
+              }
+            }
+
+            const commitStatus = git.isCommit(gitAuthToken, repo, commitId);
             if (commitStatus.type == "error") {
-              errorLog[analysis.errorLog + "git api failed to get " + commitId + " with http status code " + commitStatus.httpcode] = 1;
+              errorLog["git api failed to get " + commitId + " with http status code " + commitStatus.httpcode] = 1;
               analysis.commitsError = analysis.commitsError + commitId + ",";
               isError = true;
             }
 
-            if (branch == "DEFAULT_BRANCH") {
-              continue;
-            }
-            const branchStatus = !analysisBranchError[branch] && git.isBranch(userName, password, repo, branch);
-
-            if (branchStatus && branchStatus.type == "error") {
-              errorLog[analysis.errorLog + "git api failed to get branch " + branch + " with http status code " + branchStatus.httpcode] = 1;
+            const commitWithoutABranch = git.isCommitHasABranch(gitAuthToken, repo, commitId);
+            if (commitWithoutABranch.type == "error") {
               isError = true;
-              analysisBranchError[branch] = 1;
+              analysis.commitsNoBranchError += commitId + ",";
+              errorLog[commitWithoutABranch.body] = 1;
             }
           } else {
-            if(!repositoryError[commitRepo]){
+            if (!repositoryError[commitRepo]) {
               repositoryError[commitRepo] = repoStatus.httpcode;
             }
 
@@ -97,28 +102,28 @@ for (const i in dirs) {
   }
 
   const artifacts = statement.artifacts;
-  for(var artifactIndex in artifacts){
-    try{
+  for (var artifactIndex in artifacts) {
+    try {
       purl.PackageURL.fromString(artifacts[artifactIndex].id);
-    }catch(err){
+    } catch (err) {
       isError = true;
-      analysis.purlError = analysis.purlError+artifacts[artifactIndex].id;
+      analysis.purlError = analysis.purlError + artifacts[artifactIndex].id;
     }
   }
 
   let errorLogs = Object.keys(errorLog);
-  for(const keyIndex in errorLogs){
-    analysis.errorLog+=errorLogs[keyIndex] + ",";
+  for (const keyIndex in errorLogs) {
+    analysis.errorLog += errorLogs[keyIndex] + ",";
   }
 
   let analysisRepositoryErrors = Object.keys(analysisRepositoryError);
-  for(const keyIndex in analysisRepositoryErrors){
-    analysis.repositoryError+=analysisRepositoryErrors[keyIndex] + ",";
+  for (const keyIndex in analysisRepositoryErrors) {
+    analysis.repositoryError += analysisRepositoryErrors[keyIndex] + ",";
   }
 
   let analysisBranchErrors = Object.keys(analysisBranchError);
-  for(const keyIndex in analysisBranchErrors){
-    analysis.branchError+=analysisBranchErrors[keyIndex] + ",";
+  for (const keyIndex in analysisBranchErrors) {
+    analysis.branchError += analysisBranchErrors[keyIndex] + ",";
   }
 
   if (isError) {
